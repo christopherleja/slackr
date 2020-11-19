@@ -1,27 +1,38 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/App';
 import reportWebVitals from './reportWebVitals';
 import 'semantic-ui-css/semantic.min.css'
 
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Switch, Route, useHistory } from 'react-router-dom'
 import Register from './components/Auth/Register';
 import Login from './components/Auth/Login';
+import firebase from './firebase';
 
-const Root = () => (
-  <Router>
-    <Switch>
-      <Route path='/' exact component={App}/>
-      <Route path='/register' component={Register}/>
-      <Route path='/login' component={Login}/>
-    </Switch>
-  </Router>
-)
+const Root = () => {
+  let history = useHistory();
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user){
+        history.push('/')
+      }
+    })
+  }, [])
+
+  return (
+      <Switch>
+        <Route path='/' exact component={App}/>
+        <Route path='/register' component={Register}/>
+        <Route path='/login' component={Login}/>
+      </Switch>
+  )
+}
 
 ReactDOM.render(
-  <>
+  <Router>
     <Root />
-  </>,
+  </Router>,
   document.getElementById('root')
 );
 
