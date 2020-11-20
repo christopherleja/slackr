@@ -1,10 +1,26 @@
 import '../css/App.css'
+import { Grid } from 'semantic-ui-react'
+import ColorPanel from './ColorPanel/ColorPanel'
+import SidePanel from './SidePanel/SidePanel'
+import Messages from './Messages/Messages'
+import MetaPanel from './MetaPanel/MetaPanel'
 
 function App() {
   return (
-    <div className="App">
-      App
-    </div>
+    <Grid 
+      columns="equal" 
+      className="app" 
+    >
+      <ColorPanel />
+      <SidePanel />
+      <Grid.Column style={{ marginLeft: '20rem' }}>
+        <Messages />
+      </Grid.Column>
+      <Grid.Column width={4}>
+        <MetaPanel />
+      </Grid.Column>
+
+    </Grid>
   );
 }
 

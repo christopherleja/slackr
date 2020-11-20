@@ -4,35 +4,61 @@ import App from './components/App';
 import reportWebVitals from './reportWebVitals';
 import 'semantic-ui-css/semantic.min.css'
 
-import { BrowserRouter as Router, Switch, Route, useHistory } from 'react-router-dom'
+import { 
+  BrowserRouter as Router, 
+  Switch, 
+  Route, 
+  useHistory 
+} from 'react-router-dom'
+import { 
+  Provider, 
+  useDispatch, 
+  useSelector 
+} from 'react-redux'
+
 import Register from './components/Auth/Register';
 import Login from './components/Auth/Login';
 import firebase from './firebase';
+import store from './store'
+import Spinner from './components/Spinner'
+import { SET_USER, CLEAR_USER } from './store/actions';
 
 const Root = () => {
   let history = useHistory();
+  const dispatch = useDispatch();
+  const isLoading = useSelector(state => state.user.isLoading)
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged(user => {
       if (user){
         history.push('/')
+        dispatch({ type: SET_USER, payload: user })
+      } else {
+        dispatch({ type: CLEAR_USER })
+        history.push('/login')
       }
     })
   }, [])
 
   return (
-      <Switch>
+    <>
+      {console.log(Date.now())}
+      {isLoading ? 
+        <Spinner /> : <Switch>
         <Route path='/' exact component={App}/>
         <Route path='/register' component={Register}/>
         <Route path='/login' component={Login}/>
-      </Switch>
+      </Switch>}
+    </>
   )
 }
 
 ReactDOM.render(
-  <Router>
-    <Root />
-  </Router>,
+  <Provider store={store}>
+    <Router>
+      <Root />
+    </Router>
+  </Provider>,
   document.getElementById('root')
 );
 
