@@ -12,6 +12,8 @@ import firebase from '../../firebase.js'
 import { Link } from 'react-router-dom'
 import md5 from 'md5'
 
+const userRef = firebase.database().ref('users')
+
 const Register = () => {
   const [ username, setUsername ] = useState('')
   const [ password, setPassword ] = useState('')
@@ -19,7 +21,6 @@ const Register = () => {
   const [ email, setEmail ] = useState('')
   const [ errors, setErrors ] = useState([])
   const [ loading, setLoading ] = useState(false)
-  const [ userRef, setUserRef ] = useState(firebase.database().ref('users'))
 
   const handleUsername = (e) => {
     setUsername(e.target.value)

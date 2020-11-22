@@ -42,7 +42,6 @@ const Root = () => {
 
   return (
     <>
-      {console.log(Date.now())}
       {isLoading ? 
         <Spinner /> : <Switch>
         <Route path='/' exact component={App}/>
