@@ -13,7 +13,9 @@ function App() {
     >
       <ColorPanel />
       <SidePanel />
-      <Grid.Column style={{ marginLeft: '20rem' }}>
+      <Grid.Column 
+      style={{ marginLeft: '22rem' }}
+      >
         <Messages />
       </Grid.Column>
       <Grid.Column width={4}>

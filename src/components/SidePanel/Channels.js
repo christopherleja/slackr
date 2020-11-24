@@ -1,4 +1,3 @@
-import { cleanup } from '@testing-library/react';
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Form, Icon, Input, Menu, Modal } from 'semantic-ui-react'
