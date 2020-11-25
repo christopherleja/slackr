@@ -12,28 +12,37 @@ const Messages = () => {
   const [ messagesRef, setMessagesRef ] = useState(firebase.database().ref('messages'))
   const [ messages, setMessages ] = useState([])
   const [ messagesLoading, setMessagesLoading ] = useState(true)
+  const [ messagesCurrent, setMessagesCurrent ] = useState(true)
   
   const currentChannel = useSelector(state => state.channel.currentChannel)
   const currentUser = useSelector(state => state.user.currentUser)
 
+  const isCurrent = messagesCurrent === false
+
   useEffect(() => {
     if (currentChannel && currentUser){
       addListeners(currentChannel.id)
+      setMessagesCurrent(true)
     }
-  }, [currentChannel, messages.length])
+  }, [currentChannel, messages.length, isCurrent])
 
   const addListeners = channelId => {
     addMessageListener(channelId)
   }
 
   const addMessageListener = channelId => {
-    let loadedMessages = [];
-    
+    setMessages([])
+    const loadedMessages = [];
+
     messagesRef.child(channelId).on('child_added', snap => {
       loadedMessages.push(snap.val())
       setMessages(loadedMessages)
       setMessagesLoading(false)
     })
+  }
+
+  const updateMessages = () => {
+    setMessagesCurrent(false)
   }
 
   const displayMessages = (messages) => (
@@ -42,7 +51,7 @@ const Messages = () => {
         key={message.timestamp}
         message={message}
         user={message.user}
-        userId={currentUser.id}
+        userId={currentUser.uid}
       />
     })
   )
@@ -50,13 +59,14 @@ const Messages = () => {
   return (
     <>
       <MessagesHeader />
+
         <Segment>
           <Comment.Group className="messages">
             {displayMessages(messages)}
           </Comment.Group>
         </Segment>
 
-        <MessageForm messagesRef={messagesRef} />
+        <MessageForm messagesRef={messagesRef} updateMessages={updateMessages} />
     </>
   )
 }

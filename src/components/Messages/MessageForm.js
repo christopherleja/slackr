@@ -2,27 +2,37 @@ import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Button, Input, Segment } from 'semantic-ui-react'
 import firebase from '../../firebase'
+import FileModal from './FileModal'
 
-const MessageForm = ({ messagesRef }) => {
+const MessageForm = ({ messagesRef, updateMessages }) => {
 
   const [ message, setMessage ] = useState('')
   const [ loading, setLoading ] = useState(false)
   const [ errors, setErrors ] = useState([])
+  const [ modal, setModal ] = useState(false)
 
   const channel = useSelector(state => state.channel.currentChannel)
-  const currentUser = useSelector(state => state.user.currentUser)
+  const { uid, displayName, photoURL } = useSelector(state => state.user.currentUser)
 
   const handleMessage = (e) => {
     setMessage(e.target.value)
+  }
+
+  const openModal = () => {
+    setModal(true)
+  }
+
+  const closeModal = () => {
+    setModal(false)
   }
 
   const createMessage = () => {
     const newMessage = {
       timestamp: firebase.database.ServerValue.TIMESTAMP,
       user: {
-        id: currentUser.uid,
-        name: currentUser.displayName,
-        avatar: currentUser.photoURL
+        id: uid,
+        name: displayName,
+        avatar: photoURL
       },
       content: message
     }
@@ -38,6 +48,7 @@ const MessageForm = ({ messagesRef }) => {
       .set(createMessage())
       .then(() => {
         setLoading(false)
+        updateMessages()
         setMessage('')
         setErrors([])
       })
@@ -86,6 +97,11 @@ const MessageForm = ({ messagesRef }) => {
           content="Upload Media"
           labelPosition="right"
           icon="cloud upload"
+          onClick={openModal}
+        />
+        <FileModal 
+          modal={modal}
+          closeModal={closeModal}
         />
       </Button.Group>
     </Segment>

@@ -34,8 +34,8 @@ const Root = () => {
         history.push('/')
         dispatch({ type: SET_USER, payload: user })
       } else {
-        dispatch({ type: CLEAR_USER })
         history.push('/login')
+        dispatch({ type: CLEAR_USER })
       }
     })
   }, [])

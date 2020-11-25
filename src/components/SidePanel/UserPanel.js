@@ -1,23 +1,22 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { Dropdown, Grid, Header, Icon, Image } from 'semantic-ui-react'
 
 import firebase from '../../firebase'
-import { CLEAR_USER } from '../../store/actions'
 
 const UserPanel = () => {
-  const dispatch = useDispatch()
-  const { displayName, photoURL } = useSelector(state => state.user.currentUser)
+  const { photoURL, displayName } = useSelector(state => state.user.currentUser)
 
   const handleSignout = () => {
-      firebase
-        .auth()
-        .signOut()
-        .then(() => console.log('signed out'))
-        .catch(error => {
-          console.error(error)
-        })
-      dispatch({ type: CLEAR_USER })
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        console.log('signed out')
+      })
+      .catch(error => {
+        console.error(error)
+      })
   }
 
   const dropdownOptions = () => {
@@ -53,7 +52,7 @@ const UserPanel = () => {
             <Icon name="code"/>
             <Header.Content>Slackr</Header.Content>
           </Header>
-          
+
         {/* User Dropdown */}
           <Header 
             style={{ padding: '0.25rem'}} 
