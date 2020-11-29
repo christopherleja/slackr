@@ -3,13 +3,15 @@ import { useSelector } from 'react-redux'
 import { Button, Input, Segment } from 'semantic-ui-react'
 import firebase from '../../firebase'
 import FileModal from './FileModal'
+import ProgressBar from './ProgressBar'
 
 const MessageForm = ({ messagesRef, updateMessages }) => {
-
+  
   const [ message, setMessage ] = useState('')
   const [ loading, setLoading ] = useState(false)
   const [ errors, setErrors ] = useState([])
   const [ modal, setModal ] = useState(false)
+  const [ file, setFile ] = useState(null)
 
   const channel = useSelector(state => state.channel.currentChannel)
   const { uid, displayName, photoURL } = useSelector(state => state.user.currentUser)
@@ -26,7 +28,7 @@ const MessageForm = ({ messagesRef, updateMessages }) => {
     setModal(false)
   }
 
-  const createMessage = () => {
+  const createMessage = (fileUrl = null) => {
     const newMessage = {
       timestamp: firebase.database.ServerValue.TIMESTAMP,
       user: {
@@ -34,23 +36,53 @@ const MessageForm = ({ messagesRef, updateMessages }) => {
         name: displayName,
         avatar: photoURL
       },
-      content: message
+    };
+      if (fileUrl !== null){
+        newMessage['image'] = fileUrl
+      } else {
+        newMessage['content'] = message
     }
     return newMessage
+  }
+
+  const handleUploadError = (err) => {
+    console.error(err)
+    const newErr = [...errors, err]
+    setErrors(newErr)
+  }
+
+  const uploadFile = (file) => {
+    setFile(file)
+  }
+
+  const readyToSend = (url) => {
+    sendFileMessage(url, messagesRef, channel.id)
+  }
+
+  const sendFileMessage = (fileUrl, ref, pathToUpload) => {
+    ref.child(pathToUpload)
+      .push()
+      .set(createMessage(fileUrl))
+      .then(() => {
+        console.log("sending")
+      })
+      .catch(err => {
+        handleUploadError(err)
+      })
   }
 
   const sendMessage = () => {
     if (message){
       setLoading(true)
       messagesRef
-      .child(channel.id)
-      .push()
-      .set(createMessage())
-      .then(() => {
-        setLoading(false)
-        updateMessages()
-        setMessage('')
-        setErrors([])
+        .child(channel.id)
+        .push()
+        .set(createMessage())
+        .then(() => {
+          setLoading(false)
+          updateMessages()
+          setMessage('')
+          setErrors([])
       })
       .catch(err => {
         console.error(err)
@@ -102,8 +134,15 @@ const MessageForm = ({ messagesRef, updateMessages }) => {
         <FileModal 
           modal={modal}
           closeModal={closeModal}
+          uploadFile={uploadFile}
         />
       </Button.Group>
+      {file && 
+      <ProgressBar 
+        file={file}
+        setFile={setFile}
+        readyToSend={readyToSend}
+      />}
     </Segment>
   )
 }

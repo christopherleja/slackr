@@ -20,11 +20,9 @@ const Channels = () => {
   const { displayName, photoURL } = useSelector(state => state.user.currentUser)
 
   useEffect(() => {
-    addListeners()
-    return function cleanup(){
-      removeListeners()
-    }
-  }, [])
+    const unsub = addListeners()
+    return () => unsub()
+    }, [])
 
   useEffect(() => {
     setFirstChannel()
