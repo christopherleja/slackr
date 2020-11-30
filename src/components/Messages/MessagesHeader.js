@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Header, Icon, Input, Segment } from 'semantic-ui-react'
 
-const MessagesHeader = () => {
+const MessagesHeader = ({ channelName, numUniqueUsers, handleSearchChange }) => {
   return (
     <Segment clearing>
       
@@ -13,14 +13,14 @@ const MessagesHeader = () => {
         style={{ marginBottom: 0 }}
         >
         <span>
-          Channel
+          {channelName}
           <Icon 
             name="star outline" 
             color="black"
           />
         </span>
         <Header.Subheader>
-          2 Users
+          {numUniqueUsers}
         </Header.Subheader>
       </Header>
 
@@ -31,6 +31,7 @@ const MessagesHeader = () => {
           icon="search"
           name="searchTerm"
           placeholder="Search Messages"
+          onChange={handleSearchChange}
         />
       </Header>
     </Segment>

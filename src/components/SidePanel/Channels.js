@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Form, Icon, Input, Menu, Modal } from 'semantic-ui-react'
+import { useList } from 'react-firebase-hooks/database'
 import firebase from '../../firebase'
 import { SET_CURRENT_CHANNEL } from '../../store/actions';
 
 const channelsRef = firebase.database().ref('channels')
 
 const Channels = () => {
+
+  const [ snapshots, loading, error ] = useList(channelsRef)
+
   const [ channels, setChannels ] = useState([]);
   const [ modal, setModal ] = useState(false);
   const [ channelName, setChannelName ] = useState('');
@@ -21,7 +25,7 @@ const Channels = () => {
 
   useEffect(() => {
     const unsub = addListeners()
-    return () => unsub()
+    return () => unsub
     }, [])
 
   useEffect(() => {
@@ -130,9 +134,7 @@ const Channels = () => {
 
   return (
     <>
-      <Menu.Menu 
-      style={{ paddingBottom: '2rem'}}
-      >
+      <Menu.Menu className="menu">
         <Menu.Item>
           <span>
             <Icon name="exchange"/> CHANNELS

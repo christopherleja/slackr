@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Comment, Segment } from 'semantic-ui-react'
 import MessageForm from './MessageForm'
 import MessagesHeader from './MessagesHeader'
@@ -11,15 +11,43 @@ import Message from './Message'
 const messagesRef = firebase.database().ref('messages')
 
 const Messages = () => {
-
+  
   const [ snapshots, loading, error ] = useList(messagesRef)
 
   const [ messages, setMessages ] = useState([])
   const [ messagesLoading, setMessagesLoading ] = useState(true)
   const [ messagesCurrent, setMessagesCurrent ] = useState(false)
+  const [ numUniqueUsers, setNumUniqueUsers ] = useState('')
+  const [ searchTerm, setSearchTerm ] = useState('')
+  const [ searchLoading, setSearchLoading ] = useState(false)
+  const [ searchResults, setSearchResults ] = useState([])
   
   const currentChannel = useSelector(state => state.channel.currentChannel)
   const currentUser = useSelector(state => state.user.currentUser)
+
+  const displayChannelName = channel => {
+    return channel ? `#${channel.name}` : '';
+  }
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value)
+    setSearchLoading(true)
+    handleSearchMessages(messages)
+  }
+
+  const countUniqueUsers = (messages) => {
+    const uniqueUsers = messages.reduce((acc, message) => {
+      if (!acc.includes(message.user.name)){
+        acc.push(message.user.name);
+      }
+      return acc;
+    }, [])
+
+    const numUniqueUsers = uniqueUsers.length !== 1 ? 
+    `${uniqueUsers.length} users` : `${uniqueUsers.length} user`
+    
+    setNumUniqueUsers(numUniqueUsers)
+  }
 
   useEffect(() => {
     if (currentChannel && currentUser && !messagesCurrent){
@@ -40,29 +68,50 @@ const Messages = () => {
       setMessages(loadedMessages)
     })
     setMessagesLoading(false)
+    countUniqueUsers(loadedMessages)
   }
 
   const updateMessages = () => {
     setMessagesCurrent(false)
   }
 
-  const displayMessages = () => {
-    return messages.map(message => {
-      return <Message 
-      key={message.timestamp}
-      message={message}
-      user={message.user}
-      userId={currentUser.uid}
-      />
+  const displayMessages = (messages) => {
+    if (messages.length){
+      return messages.map(message => {
+        return <Message 
+        key={message.timestamp}
+        message={message}
+        user={message.user}
+        userId={currentUser.uid}
+        />
+      })
+    }
+  }
+
+  const handleSearchMessages = () => {
+    const channelMessages = [...messages]
+
+    const regex = new RegExp(searchTerm, 'gi')
+    const searchResults = channelMessages.filter(message => {
+      return message.content && message.content.match(regex)
     })
+
+    setSearchResults(searchResults)
+    setSearchLoading(false)
   }
 
   return (
     <>
-      <MessagesHeader />
+      <MessagesHeader 
+        channelName={displayChannelName(currentChannel)}
+        numUniqueUsers={numUniqueUsers}
+        handleSearchChange={handleSearchChange}
+      />
         <Segment>
           <Comment.Group className="messages">
-            {messages.length && displayMessages()}
+            {searchTerm ? 
+              displayMessages(searchResults) :
+              displayMessages(messages)}
           </Comment.Group>
         </Segment>
 

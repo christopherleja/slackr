@@ -31,3 +31,13 @@ body,
 .message__image {
   padding: 1rem;
 }
+
+/* SidePanel.js */
+.menu {
+  padding-bottom: 2rem;
+}
+
+/* ProgressBar.js */
+.progress__bar{
+  margin: 0.3rem 0 0 0
+}

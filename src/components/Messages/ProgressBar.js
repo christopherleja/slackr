@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import mime from 'mime-types'
 import useStorage from '../../hooks/useStorage'
+import { Progress } from 'semantic-ui-react'
 
 const ProgressBar = ({ file, setFile, readyToSend }) => {
   const metadata = { contentType: mime.lookup(file.name) }
@@ -15,15 +16,14 @@ const ProgressBar = ({ file, setFile, readyToSend }) => {
   }, [url, file])
 
   return (
-    <div 
-      className="progress-bar"
-      style={{ 
-        width: `${progress}%`,
-        height: '.4rem',
-        backgroundColor: 'firebrick',
-      }}
-      >
-    </div>
+    <Progress
+      className="progress__bar"
+      percent={progress}
+      progress
+      indicating
+      size="medium"
+      inverted
+    />
   )
 }
 

@@ -131,12 +131,12 @@ const MessageForm = ({ messagesRef, updateMessages }) => {
           icon="cloud upload"
           onClick={openModal}
         />
-        <FileModal 
-          modal={modal}
-          closeModal={closeModal}
-          uploadFile={uploadFile}
-        />
       </Button.Group>
+      <FileModal 
+        modal={modal}
+        closeModal={closeModal}
+        uploadFile={uploadFile}
+      />
       {file && 
       <ProgressBar 
         file={file}
